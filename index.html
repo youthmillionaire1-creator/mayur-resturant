@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mayur Restaurant – Ahmedabad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root {
+    --gold: #D4A017;
+    --gold-light: #F5C842;
+    --crimson: #8B1A1A;
+    --dark: #0A0603;
+    --charcoal: #1A1208;
+    --warm: #2C1A0A;
+    --cream: #FDF6E3;
+    --text-muted: #A89070;
+    --card-bg: rgba(28,18,8,0.85);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--dark);
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* ── CANVAS ── */
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 60px;
+    background: rgba(10,6,3,0.7);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(212,160,23,0.18);
+    transition: all 0.3s;
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--cream); font-style: italic; font-weight: 400; }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-cta {
+    background: linear-gradient(135deg, var(--gold), var(--crimson));
+    color: #fff !important;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+  }
+
+  .nav-cta:hover { transform: scale(1.05); box-shadow: 0 0 24px rgba(212,160,23,0.5); color: #fff !important; }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    border: 1px solid rgba(212,160,23,0.4);
+    color: var(--gold);
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 6px 20px;
+    border-radius: 50px;
+    margin-bottom: 24px;
+    animation: fadeUp 1s ease both;
+    backdrop-filter: blur(8px);
+    background: rgba(212,160,23,0.05);
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    font-weight: 900;
+    line-height: 0.95;
+    animation: fadeUp 1s 0.2s ease both;
+    text-shadow: 0 0 80px rgba(212,160,23,0.3);
+  }
+
+  .hero-title .gold { color: var(--gold); }
+  .hero-title .italic { font-style: italic; color: var(--text-muted); font-weight: 400; font-size: 0.6em; display: block; margin-top: 8px; }
+
+  .hero-sub {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 480px;
+    line-height: 1.7;
+    animation: fadeUp 1s 0.4s ease both;
+  }
+
+  .hero-btns {
+    margin-top: 40px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 1s 0.6s ease both;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), #B8860B);
+    color: #0A0603;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    padding: 15px 36px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212,160,23,0.5); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--cream);
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    padding: 15px 36px;
+    border: 1px solid rgba(253,246,227,0.3);
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    animation: bounce 2s infinite;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    margin: 20px 0 40px;
+  }
+
+  /* ── ABOUT ── */
+  #about {
+    padding: 120px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .about-img-wrap {
+    position: relative;
+    height: 500px;
+  }
+
+  .about-img-box {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--warm), var(--charcoal));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+    border: 1px solid rgba(212,160,23,0.2);
+  }
+
+  .about-badge {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--crimson));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(212,160,23,0.4);
+  }
+
+  .about-badge small { font-size: 0.6rem; font-family: 'Outfit', sans-serif; letter-spacing: 2px; text-transform: uppercase; }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 40px;
+  }
+
+  .stat-box {
+    background: var(--card-bg);
+    border: 1px solid rgba(212,160,23,0.15);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s, border-color 0.3s;
+  }
+
+  .stat-box:hover { transform: translateY(-4px); border-color: rgba(212,160,23,0.4); }
+
+  .stat-box .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  .stat-box .lbl { font-size: 0.78rem; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+
+  /* ── MENU ── */
+  #menu {
+    padding: 120px 60px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .menu-header { text-align: center; margin-bottom: 60px; }
+
+  .menu-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: 1px solid rgba(212,160,23,0.25);
+    color: var(--text-muted);
+    padding: 10px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+  }
+
+  .tab-btn.active, .tab-btn:hover {
+    background: linear-gradient(135deg, var(--gold), #B8860B);
+    color: var(--dark);
+    border-color: transparent;
+    font-weight: 700;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .menu-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(212,160,23,0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+  }
+
+  .menu-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 30px rgba(212,160,23,0.1);
+    border-color: rgba(212,160,23,0.35);
+  }
+
+  .menu-card-img {
+    height: 160px;
+    background: linear-gradient(135deg, var(--warm), var(--charcoal));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .menu-card-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.4));
+  }
+
+  .veg-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #22c55e;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .veg-dot { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; }
+
+  .nonveg-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ef4444;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .nonveg-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; }
+
+  .menu-card-body { padding: 18px; }
+
+  .menu-card-body h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .menu-card-body p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px; }
+
+  .menu-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .add-btn {
+    background: linear-gradient(135deg, var(--gold), #B8860B);
+    color: var(--dark);
+    border: none;
+    border-radius: 50px;
+    padding: 7px 18px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .add-btn:hover { transform: scale(1.05); }
+
+  /* ── GALLERY ── */
+  #gallery {
+    padding: 120px 60px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .gallery-header { text-align: center; margin-bottom: 60px; }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 220px);
+    gap: 16px;
+  }
+
+  .gallery-item {
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--warm), var(--charcoal));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    border: 1px solid rgba(212,160,23,0.12);
+    transition: transform 0.4s, box-shadow 0.4s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .gallery-item:hover { transform: scale(1.02); box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(212,160,23,0.1); }
+
+  .gallery-item:first-child { grid-column: span 2; grid-row: span 2; font-size: 7rem; }
+
+  .gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: flex-end;
+    padding: 20px;
+  }
+
+  .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+  .gallery-overlay span { font-family: 'Playfair Display', serif; font-size: 1rem; font-size: 0.9rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; }
+
+  /* ── REVIEWS ── */
+  #reviews {
+    padding: 120px 60px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .reviews-header { text-align: center; margin-bottom: 60px; }
+
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .review-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(212,160,23,0.12);
+    border-radius: 12px;
+    padding: 28px;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s, border-color 0.3s;
+    position: relative;
+  }
+
+  .review-card::before {
+    content: '"';
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    color: rgba(212,160,23,0.15);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .review-card:hover { transform: translateY(-4px); border-color: rgba(212,160,23,0.3); }
+
+  .stars { color: var(--gold); font-size: 1rem; margin-bottom: 12px; letter-spacing: 2px; }
+
+  .review-text { font-size: 0.92rem; line-height: 1.75; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+
+  .review-author { display: flex; align-items: center; gap: 12px; }
+
+  .author-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--crimson));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .author-name { font-weight: 600; font-size: 0.9rem; }
+  .author-loc { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* ── CONTACT ── */
+  #contact {
+    padding: 120px 60px;
+    max-width: 1300px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .contact-info { }
+
+  .contact-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 32px;
+  }
+
+  .contact-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(212,160,23,0.1);
+    border: 1px solid rgba(212,160,23,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .contact-detail h4 { font-weight: 600; margin-bottom: 4px; }
+  .contact-detail p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+  .contact-detail a { color: var(--gold); text-decoration: none; }
+  .contact-detail a:hover { text-decoration: underline; }
+
+  .map-embed {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(212,160,23,0.2);
+    height: 380px;
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    color: var(--text-muted);
+    position: relative;
+  }
+
+  .map-embed iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    filter: grayscale(0.3) invert(0.9) hue-rotate(180deg) brightness(0.6);
+  }
+
+  .hours-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+
+  .hours-table tr td { padding: 6px 0; font-size: 0.85rem; }
+  .hours-table tr td:first-child { color: var(--text-muted); }
+  .hours-table tr td:last-child { text-align: right; color: var(--cream); font-weight: 500; }
+  .hours-table tr.today td { color: var(--gold); }
+
+  /* ── WHATSAPP FLOAT ── */
+  .whatsapp-float {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 200;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #25D366;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 24px rgba(37,211,102,0.4);
+    text-decoration: none;
+    font-size: 1.6rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    animation: pulse-wa 2s infinite;
+  }
+
+  .whatsapp-float:hover { transform: scale(1.1); box-shadow: 0 8px 32px rgba(37,211,102,0.6); }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(212,160,23,0.12);
+    padding: 48px 60px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+  .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: color 0.3s; cursor: pointer; }
+  .footer-links a:hover { color: var(--gold); }
+
+  .footer-copy { font-size: 0.78rem; color: var(--text-muted); width: 100%; text-align: center; padding-top: 20px; border-top: 1px solid rgba(212,160,23,0.08); margin-top: 20px; }
+
+  /* ── ORDER MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--charcoal);
+    border: 1px solid rgba(212,160,23,0.25);
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 440px;
+    width: 90%;
+    transform: scale(0.9);
+    transition: transform 0.3s;
+    position: relative;
+  }
+
+  .modal-overlay.active .modal { transform: scale(1); }
+
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+    color: var(--gold);
+  }
+
+  .modal p { color: var(--text-muted); margin-bottom: 28px; font-size: 0.9rem; }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .modal-close:hover { color: var(--cream); }
+
+  .modal-btns { display: flex; flex-direction: column; gap: 12px; }
+
+  .modal-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(212,160,23,0.2);
+    background: rgba(212,160,23,0.05);
+    color: var(--cream);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .modal-btn:hover { background: rgba(212,160,23,0.12); border-color: var(--gold); }
+  .modal-btn span { font-size: 1.5rem; }
+
+  /* ── PAGE SECTIONS (show/hide) ── */
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+  #home-section { display: block; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-8px); }
+  }
+
+  @keyframes pulse-wa {
+    0%, 100% { box-shadow: 0 4px 24px rgba(37,211,102,0.4); }
+    50% { box-shadow: 0 4px 40px rgba(37,211,102,0.7); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── MOBILE ── */
+  @media (max-width: 900px) {
+    nav { padding: 14px 24px; }
+    .nav-links { display: none; }
+
+    #about { grid-template-columns: 1fr; padding: 80px 24px; gap: 40px; }
+    .about-img-wrap { height: 280px; }
+    #menu { padding: 80px 24px; }
+    #gallery { padding: 80px 24px; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .gallery-item:first-child { grid-column: span 2; grid-row: span 1; height: 200px; font-size: 4rem; }
+    #reviews { padding: 80px 24px; }
+    #contact { grid-template-columns: 1fr; padding: 80px 24px; gap: 40px; }
+    footer { padding: 40px 24px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 3D Background Canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Navigation -->
+<nav id="navbar">
+  <a class="nav-logo" href="#" onclick="showSection('home')">Mayur <span>Restaurant</span></a>
+  <ul class="nav-links">
+    <li><a onclick="showSection('home')">Home</a></li>
+    <li><a onclick="showSection('menu')">Menu</a></li>
+    <li><a onclick="showSection('gallery')">Gallery</a></li>
+    <li><a onclick="showSection('reviews')">Reviews</a></li>
+    <li><a onclick="showSection('contact')">Contact</a></li>
+    <li><a class="nav-cta" onclick="openOrderModal()">Order Now</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════ HOME SECTION ══════════════ -->
+<div id="home-section" class="page-section active">
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-badge">⭐ Est. 2010 · Ahmedabad's Finest</div>
+    <h1 class="hero-title">
+      <span class="gold">Mayur</span>
+      <span class="italic">Where Every Bite Tells a Story</span>
+    </h1>
+    <p class="hero-sub">Authentic Indian flavours crafted with love. From sizzling starters to royal biryanis — experience dining redefined.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" onclick="showSection('menu')">Explore Menu</a>
+      <a class="btn-outline" onclick="showSection('contact')">Find Us</a>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      Scroll
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="reveal">
+    <div class="about-img-wrap">
+      <div class="about-img-box">🍛</div>
+      <div class="about-badge">15+<small>Years</small></div>
+    </div>
+    <div>
+      <p class="section-label">Our Story</p>
+      <h2 class="section-title">A Legacy of <em>Authentic</em> Taste</h2>
+      <div class="divider"></div>
+      <p style="color:var(--text-muted);line-height:1.8;margin-bottom:16px;">Started in 2010 in the heart of Ahmedabad, Mayur Restaurant was born from a passion for preserving the rich culinary heritage of India. Our chefs bring generations of knowledge to every dish they prepare.</p>
+      <p style="color:var(--text-muted);line-height:1.8;">From the finest spices sourced directly from Indian farms to the traditional slow-cooking methods — every detail is crafted to give you an unforgettable dining experience.</p>
+      <div class="about-stats">
+        <div class="stat-box"><div class="num">15+</div><div class="lbl">Years of Excellence</div></div>
+        <div class="stat-box"><div class="num">200+</div><div class="lbl">Dishes on Menu</div></div>
+        <div class="stat-box"><div class="num">50k+</div><div class="lbl">Happy Customers</div></div>
+        <div class="stat-box"><div class="num">4.8★</div><div class="lbl">Google Rating</div></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ══════════════ MENU SECTION ══════════════ -->
+<div id="menu-section" class="page-section">
+  <section id="menu">
+    <div class="menu-header reveal">
+      <p class="section-label">Our Menu</p>
+      <h2 class="section-title">Flavours Worth <em>Craving</em></h2>
+      <div class="divider" style="margin:20px auto 0;"></div>
+    </div>
+
+    <div class="menu-tabs reveal">
+      <button class="tab-btn active" onclick="filterMenu('all',this)">All Items</button>
+      <button class="tab-btn" onclick="filterMenu('starters',this)">🥗 Starters</button>
+      <button class="tab-btn" onclick="filterMenu('main',this)">🍛 Main Course</button>
+      <button class="tab-btn" onclick="filterMenu('chinese',this)">🥢 Chinese</button>
+      <button class="tab-btn" onclick="filterMenu('beverages',this)">🥤 Beverages</button>
+    </div>
+
+    <div class="menu-grid reveal" id="menu-grid"></div>
+  </section>
+</div>
+
+<!-- ══════════════ GALLERY SECTION ══════════════ -->
+<div id="gallery-section" class="page-section">
+  <section id="gallery">
+    <div class="gallery-header reveal">
+      <p class="section-label">Gallery</p>
+      <h2 class="section-title">A Feast for the <em>Eyes</em></h2>
+      <div class="divider" style="margin:20px auto 0;"></div>
+    </div>
+    <div class="gallery-grid reveal">
+      <div class="gallery-item" style="grid-column:span 2;grid-row:span 2;">
+        🍽️
+        <div class="gallery-overlay"><span>Signature Thali</span></div>
+      </div>
+      <div class="gallery-item">🍢<div class="gallery-overlay"><span>Starters</span></div></div>
+      <div class="gallery-item">🫕<div class="gallery-overlay"><span>Curries</span></div></div>
+      <div class="gallery-item">🍱<div class="gallery-overlay"><span>Biryani</span></div></div>
+      <div class="gallery-item">🧆<div class="gallery-overlay"><span>Snacks</span></div></div>
+      <div class="gallery-item">🍰<div class="gallery-overlay"><span>Desserts</span></div></div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════ REVIEWS SECTION ══════════════ -->
+<div id="reviews-section" class="page-section">
+  <section id="reviews">
+    <div class="reviews-header reveal">
+      <p class="section-label">Testimonials</p>
+      <h2 class="section-title">What Our Guests <em>Say</em></h2>
+      <div class="divider" style="margin:20px auto 0;"></div>
+    </div>
+    <div class="reviews-grid reveal" id="reviews-grid"></div>
+  </section>
+</div>
+
+<!-- ══════════════ CONTACT SECTION ══════════════ -->
+<div id="contact-section" class="page-section">
+  <section id="contact" style="padding-top:140px;">
+    <div class="reveal">
+      <p class="section-label">Find Us</p>
+      <h2 class="section-title">Come <em>Visit</em> Us</h2>
+      <div class="divider"></div>
+
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div class="contact-detail">
+          <h4>Address</h4>
+          <p>Near Navrangpura, CG Road<br>Ahmedabad, Gujarat 380009</p>
+        </div>
+      </div>
+
+      <div class="contact-item">
+        <div class="contact-icon">📞</div>
+        <div class="contact-detail">
+          <h4>Phone</h4>
+          <p><a href="tel:+919876543210">+91 98765 43210</a></p>
+          <p><a href="tel:+917923456789">+91 79 2345 6789</a></p>
+        </div>
+      </div>
+
+      <div class="contact-item">
+        <div class="contact-icon">⏰</div>
+        <div class="contact-detail">
+          <h4>Opening Hours</h4>
+          <table class="hours-table">
+            <tr class="today"><td>Monday – Friday</td><td>11:00 AM – 11:00 PM</td></tr>
+            <tr><td>Saturday</td><td>10:00 AM – 11:30 PM</td></tr>
+            <tr><td>Sunday</td><td>10:00 AM – 10:30 PM</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="contact-item">
+        <div class="contact-icon">📧</div>
+        <div class="contact-detail">
+          <h4>Email</h4>
+          <p><a href="mailto:info@mayurrestaurant.in">info@mayurrestaurant.in</a></p>
+        </div>
+      </div>
+
+      <a class="btn-primary" href="https://wa.me/919876543210" target="_blank" style="margin-top:8px;display:inline-block;">💬 WhatsApp Us</a>
+    </div>
+
+    <div class="reveal">
+      <div class="map-embed">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3671.8939338847344!2d72.5612!3d23.0258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e84f924f6de03%3A0x27a3e8c5e8b2a08c!2sNavrangpura%2C%20Ahmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin"
+          allowfullscreen="" loading="lazy">
+        </iframe>
+      </div>
+      <p style="margin-top:16px;color:var(--text-muted);font-size:0.83rem;">📌 Near Navrangpura Metro Station · Free parking available</p>
+    </div>
+  </section>
+</div>
+
+<!-- WhatsApp Float -->
+<a class="whatsapp-float" href="https://wa.me/919876543210" target="_blank" title="Chat on WhatsApp">💬</a>
+
+<!-- Order Modal -->
+<div class="modal-overlay" id="order-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeOrderModal()">✕</button>
+    <h2>Order Online</h2>
+    <p>Choose your preferred platform or call us directly.</p>
+    <div class="modal-btns">
+      <a class="modal-btn" href="https://www.swiggy.com" target="_blank"><span>🧡</span> Order on Swiggy</a>
+      <a class="modal-btn" href="https://www.zomato.com" target="_blank"><span>❤️</span> Order on Zomato</a>
+      <a class="modal-btn" href="https://wa.me/919876543210" target="_blank"><span>💬</span> Order via WhatsApp</a>
+      <a class="modal-btn" href="tel:+919876543210"><span>📞</span> Call to Order: +91 98765 43210</a>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer style="position:relative;z-index:1;">
+  <div class="footer-logo">Mayur Restaurant</div>
+  <div class="footer-links">
+    <a onclick="showSection('home')">Home</a>
+    <a onclick="showSection('menu')">Menu</a>
+    <a onclick="showSection('gallery')">Gallery</a>
+    <a onclick="showSection('reviews')">Reviews</a>
+    <a onclick="showSection('contact')">Contact</a>
+  </div>
+  <div class="footer-copy">© 2025 Mayur Restaurant, Ahmedabad. All rights reserved. Crafted with ❤️ in Gujarat.</div>
+</footer>
+
+<!-- ════════════════ SCRIPTS ════════════════ -->
+<script>
+// ── THREE.JS 3D BACKGROUND ──
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.z = 5;
+
+  // Floating particles
+  const geo = new THREE.BufferGeometry();
+  const count = 800;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 30;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
+    const t = Math.random();
+    if (t < 0.5) {
+      colors[i * 3] = 0.83; colors[i * 3 + 1] = 0.63; colors[i * 3 + 2] = 0.09; // gold
+    } else {
+      colors[i * 3] = 0.55; colors[i * 3 + 1] = 0.10; colors[i * 3 + 2] = 0.10; // crimson
+    }
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.PointsMaterial({ size: 0.06, vertexColors: true, transparent: true, opacity: 0.65 });
+  const particles = new THREE.Points(geo, mat);
+  scene.add(particles);
+
+  // Floating tori (rings)
+  const torii = [];
+  const torusMat = new THREE.MeshBasicMaterial({ color: 0xD4A017, wireframe: true, opacity: 0.12, transparent: true });
+  for (let i = 0; i < 5; i++) {
+    const torus = new THREE.Mesh(new THREE.TorusGeometry(1.5 + i * 0.8, 0.04, 8, 60), torusMat);
+    torus.position.set((Math.random() - 0.5) * 14, (Math.random() - 0.5) * 8, (Math.random() - 0.5) * 5 - 5);
+    torus.rotation.x = Math.random() * Math.PI;
+    torus.rotation.y = Math.random() * Math.PI;
+    scene.add(torus);
+    torii.push(torus);
+  }
+
+  // Mouse parallax
+  let mx = 0, my = 0;
+  document.addEventListener('mousemove', e => {
+    mx = (e.clientX / window.innerWidth - 0.5) * 0.8;
+    my = (e.clientY / window.innerHeight - 0.5) * 0.5;
+  });
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.004;
+    particles.rotation.y += 0.0008;
+    particles.rotation.x += 0.0003;
+    torii.forEach((tor, i) => {
+      tor.rotation.x += 0.003 + i * 0.001;
+      tor.rotation.y += 0.002 + i * 0.0005;
+      tor.position.y += Math.sin(t + i) * 0.003;
+    });
+    camera.position.x += (mx - camera.position.x) * 0.04;
+    camera.position.y += (-my - camera.position.y) * 0.04;
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+// ── MENU DATA ──
+const menuItems = [
+  { cat: 'starters', name: 'Paneer Tikka', desc: 'Marinated cottage cheese grilled in tandoor with spices', price: 180, icon: '🧀', veg: true },
+  { cat: 'starters', name: 'Veg Spring Rolls', desc: 'Crispy rolls stuffed with mixed vegetables & noodles', price: 120, icon: '🥟', veg: true },
+  { cat: 'starters', name: 'Chicken 65', desc: 'Spicy deep-fried chicken with curry leaves & chilies', price: 210, icon: '🍗', veg: false },
+  { cat: 'starters', name: 'Onion Bhajia', desc: 'Crispy golden fritters with green chutney', price: 90, icon: '🧅', veg: true },
+  { cat: 'main', name: 'Dal Makhani', desc: 'Slow-cooked black lentils in creamy tomato butter sauce', price: 160, icon: '🫘', veg: true },
+  { cat: 'main', name: 'Butter Chicken', desc: 'Tender chicken in rich tomato-cream gravy', price: 280, icon: '🍛', veg: false },
+  { cat: 'main', name: 'Paneer Butter Masala', desc: 'Soft paneer in silky, aromatic butter masala', price: 220, icon: '🟡', veg: true },
+  { cat: 'main', name: 'Veg Biryani', desc: 'Fragrant basmati rice with seasonal vegetables & saffron', price: 180, icon: '🍚', veg: true },
+  { cat: 'main', name: 'Mutton Rogan Josh', desc: 'Slow-braised mutton in Kashmiri spices', price: 340, icon: '🥩', veg: false },
+  { cat: 'chinese', name: 'Veg Hakka Noodles', desc: 'Stir-fried noodles with fresh vegetables & soy sauce', price: 140, icon: '🍜', veg: true },
+  { cat: 'chinese', name: 'Chilli Chicken', desc: 'Indo-Chinese classic with peppers & soy', price: 240, icon: '🌶️', veg: false },
+  { cat: 'chinese', name: 'Veg Fried Rice', desc: 'Wok-tossed rice with vegetables & scrambled egg', price: 130, icon: '🥡', veg: true },
+  { cat: 'chinese', name: 'Manchurian Gravy', desc: 'Crispy veg balls in tangy Manchurian sauce', price: 160, icon: '🥣', veg: true },
+  { cat: 'beverages', name: 'Mango Lassi', desc: 'Thick creamy yogurt shake with Alphonso mango', price: 80, icon: '🥭', veg: true },
+  { cat: 'beverages', name: 'Masala Chai', desc: 'Aromatic spiced Indian tea with ginger & cardamom', price: 40, icon: '☕', veg: true },
+  { cat: 'beverages', name: 'Fresh Lime Soda', desc: 'Refreshing lime with soda, sweet or salted', price: 60, icon: '🍋', veg: true },
+  { cat: 'beverages', name: 'Rose Sharbat', desc: 'Chilled rose syrup drink with basil seeds', price: 70, icon: '🌹', veg: true },
+];
+
+function renderMenu(filter) {
+  const grid = document.getElementById('menu-grid');
+  const items = filter === 'all' ? menuItems : menuItems.filter(i => i.cat === filter);
+  grid.innerHTML = items.map(item => `
+    <div class="menu-card">
+      <div class="menu-card-img">
+        ${item.icon}
+        <div class="${item.veg ? 'veg-badge' : 'nonveg-badge'}">
+          <div class="${item.veg ? 'veg-dot' : 'nonveg-dot'}"></div>
+        </div>
+      </div>
+      <div class="menu-card-body">
+        <h3>${item.name}</h3>
+        <p>${item.desc}</p>
+        <div class="menu-card-footer">
+          <span class="price">₹${item.price}</span>
+          <button class="add-btn" onclick="openOrderModal()">Order +</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterMenu(cat, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMenu(cat);
+}
+
+// ── REVIEWS DATA ──
+const reviews = [
+  { name: 'Priya Shah', loc: 'Navrangpura, Ahmedabad', rating: 5, text: 'Best paneer tikka I have ever had in Ahmedabad! The ambience is beautiful and the service is exceptional. Will definitely come back again and again.' },
+  { name: 'Rahul Mehta', loc: 'Satellite, Ahmedabad', rating: 5, text: 'Visited for a family dinner and it was outstanding. The dal makhani melts in your mouth. Portions are generous and pricing is very reasonable.' },
+  { name: 'Anjali Patel', loc: 'Bopal, Ahmedabad', rating: 5, text: 'The Butter Chicken here is something else! Rich, creamy and full of flavour. This is our family\'s go-to restaurant for celebrations.' },
+  { name: 'Vikram Desai', loc: 'Vastrapur, Ahmedabad', rating: 4, text: 'Great Chinese section — the Hakka noodles are perfectly cooked. Staff is very friendly. The 3D decor inside is stunning. Highly recommend!' },
+  { name: 'Sneha Joshi', loc: 'Thaltej, Ahmedabad', rating: 5, text: 'Ordered via Swiggy and the biryani arrived piping hot. Packed beautifully with all accompaniments. Quality never disappoints. 5 stars always!' },
+  { name: 'Arjun Kapoor', loc: 'Maninagar, Ahmedabad', rating: 5, text: 'The mango lassi alone is worth the visit! Everything on the menu is fresh and authentic. You can taste the love put into every dish.' },
+];
+
+function renderReviews() {
+  document.getElementById('reviews-grid').innerHTML = reviews.map(r => `
+    <div class="review-card">
+      <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+      <p class="review-text">${r.text}</p>
+      <div class="review-author">
+        <div class="author-avatar">${r.name[0]}</div>
+        <div>
+          <div class="author-name">${r.name}</div>
+          <div class="author-loc">📍 ${r.loc}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── NAVIGATION ──
+function showSection(name) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(name + '-section').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // init content
+  if (name === 'menu') renderMenu('all');
+  if (name === 'reviews') renderReviews();
+  // trigger reveals
+  setTimeout(triggerReveal, 100);
+}
+
+// ── MODAL ──
+function openOrderModal() {
+  document.getElementById('order-modal').classList.add('active');
+}
+function closeOrderModal() {
+  document.getElementById('order-modal').classList.remove('active');
+}
+document.getElementById('order-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeOrderModal();
+});
+
+// ── REVEAL ON SCROLL ──
+function triggerReveal() {
+  const els = document.querySelectorAll('.reveal');
+  els.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight - 60) el.classList.add('visible');
+  });
+}
+window.addEventListener('scroll', triggerReveal);
+triggerReveal();
+
+// ── INIT ──
+renderMenu('all');
+renderReviews();
+</script>
+</body>
+</html>
